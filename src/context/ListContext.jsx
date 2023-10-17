@@ -17,6 +17,7 @@ export const useList = () => {
   return context;
 };
 
+// eslint-disable-next-line react/prop-types
 export const ListProvider = ({ children }) => {
   const [lists, setLists] = useState([]);
   const [currentList, setCurrentList] = useState(null);

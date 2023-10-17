@@ -37,9 +37,11 @@ function TaskPage() {
           )}
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-2">
-            {tasks.map((task) => !(task.list === currentListId) ? null : (
+            {tasks.map((task) => 
+              task.list === currentListId ? ( 
                 <div
                   className="card w-96 bg-base-100 shadow-xl"
+                  key={task._id}
                 >
                   <div className="card-body">
                     <h2 className="card-title">{task.title}</h2>
@@ -49,10 +51,10 @@ function TaskPage() {
                     </p>
                     <div className="card-actions justify-end">
                       <button className="btn btn-primary">Buy Now</button>
-                    </div>
+                    </div> 
                   </div>
                 </div>
-              )
+              ) : null
             )}
           </div>
           <ButtonLink to={"/add-task"} className={"btn mt-12"}>
@@ -63,5 +65,6 @@ function TaskPage() {
     </>
   );
 }
+
 
 export default TaskPage;

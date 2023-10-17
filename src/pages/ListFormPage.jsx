@@ -8,7 +8,7 @@ import ButtonBack from "../components/ButtonBack";
 
 function ListFormPage() {
   const { createList, updateList } = useList();
-  const { register, handleSubmit, formState: errors } = useForm();
+  const { register, handleSubmit, errors: errors } = useForm();
   const params = useParams();
   const navigate = useNavigate();
 

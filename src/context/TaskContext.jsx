@@ -15,6 +15,7 @@ export const useTask = () => {
   return context;
 };
 
+// eslint-disable-next-line react/prop-types
 export function TaskProvider({ children }) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);

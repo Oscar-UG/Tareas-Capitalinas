@@ -16,6 +16,7 @@ export const useAuth = () => {
   return context;
 };
 
+// eslint-disable-next-line react/prop-types
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -25,17 +26,19 @@ export const AuthProvider = ({ children }) => {
   const signup = async (values) => {
     try {
       const res = await registerRequest(values);
-      setUser(res.data);
+      Cookies.set("token", res.data.token); // Guardar el token en las cookies
+      setUser(res.data.user);
       setIsAuthenticated(true);
     } catch (error) {
       setErrors(error.response.data);
     }
   };
-
+  
   const signin = async (values) => {
     try {
       const res = await loginRequest(values);
-      setUser(res.data);
+      Cookies.set("token", res.data.token); // Guardar el token en las cookies
+      setUser(res.data.user);
       setIsAuthenticated(true);
     } catch (error) {
       setErrors(error.response.data);
@@ -45,7 +48,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     Cookies.remove("token");
     setUser(null);
-    isAuthenticated(false);
+    setIsAuthenticated(false);
   };
 
   useEffect(() => {
@@ -59,34 +62,37 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     async function checkLogin() {
-      const cookies = Cookies.get();
-
-      if (!cookies.token) {
-        setIsAuthenticated(false);
-        setLoading(false);
-        return setUser(null);
-      }
-
       try {
+        const cookies = Cookies.get();
+  
+        if (!cookies.token) {
+          setIsAuthenticated(false);
+          setLoading(false);
+          return setUser(null);
+        }
+  
         const res = await verifyTokenRequest(cookies.token);
+  
         if (!res.data) {
           setIsAuthenticated(false);
           setLoading(false);
           return;
         }
-
+  
         setIsAuthenticated(true);
         setUser(res.data);
         setLoading(false);
       } catch (error) {
+        console.error("Error al verificar el inicio de sesión:", error);
         setIsAuthenticated(false);
         setUser(null);
         setLoading(false);
       }
     }
-
+  
     checkLogin();
   }, []);
+  
 
   return (
     <AuthContext.Provider
