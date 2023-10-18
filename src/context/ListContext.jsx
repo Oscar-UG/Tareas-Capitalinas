@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import {
   getListsRequest,
   getListRequest,
@@ -22,6 +22,7 @@ export const ListProvider = ({ children }) => {
   const [lists, setLists] = useState([]);
   const [currentList, setCurrentList] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [currentListId, setCurrentListId] = useState(null);
 
   const getLists = async () => {
     const res = await getListsRequest();
@@ -72,11 +73,13 @@ export const ListProvider = ({ children }) => {
     setCurrentList(null);
   };
 
-  const [currentListId, setCurrentListId] = useState(null);
-
   const setListId = (listId) => {
     setCurrentListId(listId);
   };
+
+  useEffect(() => {
+    getLists();
+  }, [lists]);
 
   return (
     <ListContext.Provider

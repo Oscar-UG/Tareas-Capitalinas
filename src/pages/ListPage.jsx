@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useList } from "../context/ListContext";
 import { ImFileEmpty } from "react-icons/im";
 import { IoMdAddCircleOutline } from "react-icons/io";
@@ -11,11 +10,8 @@ import Navbar from "../components/Navbar";
 import Loader from "../components/Loader";
 
 function ListPage() {
-  const { lists, getLists, deleteList, loading, selectList, setListId } = useList();
-
-  useEffect(() => {
-    getLists();
-  }, []);
+  const { lists, deleteList, loading, selectList, setListId } =
+    useList();
 
   return (
     <>
@@ -36,7 +32,7 @@ function ListPage() {
           <div>
             {lists.map((list) => (
               <div className="w-1/2 mx-auto my-auto mb-3" key={list._id}>
-                <div className="navbar bg-base-300 hover:bg-zinc-200 cursor-pointer hover:text-slate-950 rounded-box">
+                <div className="navbar bg-base-300 hover:bg-zinc-200 hover:text-slate-950 rounded-box">
                   <div className="flex-1 px-2 lg:flex-none grid grid-rows-2 gap-2 m-4">
                     <h2 className="text-lg font-bold">{list.title}</h2>
                     <p>{dayjs(list.created_at).format("DD-MM-YYYY")}</p>
@@ -46,7 +42,10 @@ function ListPage() {
                       <ButtonLink
                         to={`/tasks`}
                         className="btn btn-success"
-                        onClick={() => {setListId(list._id); selectList(list)}}
+                        onClick={() => {
+                          setListId(list._id);
+                          selectList(list);
+                        }}
                       >
                         Tareas <FaTasks />
                       </ButtonLink>
@@ -77,7 +76,7 @@ function ListPage() {
             ))}
           </div>
           <ButtonLink to={"/add-list"} className={"btn"}>
-            <IoMdAddCircleOutline />
+            Agregar lista <IoMdAddCircleOutline className="text-2xl" />
           </ButtonLink>
         </>
       )}

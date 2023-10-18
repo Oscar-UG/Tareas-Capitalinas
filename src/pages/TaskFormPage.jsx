@@ -29,7 +29,7 @@ function TaskFormPage() {
         });
       }
 
-      navigate("/lists");
+      navigate("/tasks");
     } catch (error) {
       console.log(error);
     }
@@ -61,7 +61,6 @@ function TaskFormPage() {
                   type="text"
                   placeholder="Descripción"
                   className="input input-bordered w-full max-w-xs"
-                  autoFocus
                   {...register("description")}
                 />
                 {errors.title && (
@@ -75,7 +74,6 @@ function TaskFormPage() {
           </div>
         </div>
       </div>
-      u
     </>
   );
 }
