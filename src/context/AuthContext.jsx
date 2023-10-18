@@ -4,7 +4,7 @@ import {
   loginRequest,
   verifyTokenRequest,
 } from "../api/auth.js";
-
+import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
 
@@ -29,7 +29,6 @@ export const AuthProvider = ({ children }) => {
       Cookies.set("token", res.data.token); // Guardar el token en las cookies
       setUser(res.data.user);
       setIsAuthenticated(true);
-      localStorage.setItem("token", res.data.token);
     } catch (error) {
       setErrors(error.response.data);
     }
@@ -41,14 +40,13 @@ export const AuthProvider = ({ children }) => {
       Cookies.set("token", res.data.token); // Guardar el token en las cookies
       setUser(res.data.user);
       setIsAuthenticated(true);
-      localStorage.setItem("token", res.data.token);
     } catch (error) {
       setErrors(error.response.data);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    Cookies.remove("token");
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -65,8 +63,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     async function checkLogin() {
       try {
-        const token = localStorage.getItem("token");
-  
+        const token = Cookies.get("token");
         if (!token.token) {
           setIsAuthenticated(false);
           setLoading(false);
