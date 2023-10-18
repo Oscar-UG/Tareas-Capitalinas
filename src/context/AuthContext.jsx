@@ -38,7 +38,8 @@ export const AuthProvider = ({ children }) => {
   const signin = async (values) => {
     try {
       const res = await loginRequest(values);
-      setUser(res.data);
+      Cookies.set("token", res.data.token); // Guardar el token en las cookies
+      setUser(res.data.user);
       setIsAuthenticated(true);
       localStorage.setItem("token", res.data.token);
     } catch (error) {
