@@ -4,7 +4,7 @@ import {
   loginRequest,
   verifyTokenRequest,
 } from "../api/auth.js";
-import Cookies from "js-cookie";
+
 
 export const AuthContext = createContext();
 
@@ -26,9 +26,9 @@ export const AuthProvider = ({ children }) => {
   const signup = async (values) => {
     try {
       const res = await registerRequest(values);
-      Cookies.set("token", res.data.token); // Guardar el token en las cookies
-      setUser(res.data.user);
+      setUser(res.data);
       setIsAuthenticated(true);
+      localStorage.setItem("token", res.data.token);
     } catch (error) {
       setErrors(error.response.data);
     }
@@ -37,16 +37,16 @@ export const AuthProvider = ({ children }) => {
   const signin = async (values) => {
     try {
       const res = await loginRequest(values);
-      Cookies.set("token", res.data.token); // Guardar el token en las cookies
-      setUser(res.data.user);
+      setUser(res.data);
       setIsAuthenticated(true);
+      localStorage.setItem("token", res.data.token);
     } catch (error) {
       setErrors(error.response.data);
     }
   };
 
   const logout = () => {
-    Cookies.remove("token");
+    localStorage.removeItem("token");
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -63,15 +63,15 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     async function checkLogin() {
       try {
-        const cookies = Cookies.get();
+        const token = localStorage.getItem("token");
   
-        if (!cookies.token) {
+        if (!token.token) {
           setIsAuthenticated(false);
           setLoading(false);
           return setUser(null);
         }
   
-        const res = await verifyTokenRequest(cookies.token);
+        const res = await verifyTokenRequest(token.token);
   
         if (!res.data) {
           setIsAuthenticated(false);
