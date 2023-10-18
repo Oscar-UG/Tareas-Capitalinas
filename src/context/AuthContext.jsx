@@ -4,7 +4,7 @@ import {
   loginRequest,
   verifyTokenRequest,
 } from "../api/auth.js";
-
+import Cookies from "js-cookie";
 
 export const AuthContext = createContext();
 
@@ -26,9 +26,10 @@ export const AuthProvider = ({ children }) => {
   const signup = async (values) => {
     try {
       const res = await registerRequest(values);
-      setUser(res.data);
+      console.log('token', res.data.token);
+      setUser(res.data.user);
       setIsAuthenticated(true);
-      localStorage.setItem("token", res.data.token);
+      Cookies.set("token", res.data.token); // Guardar el token en las cookies
     } catch (error) {
       setErrors(error.response.data);
     }
@@ -37,16 +38,16 @@ export const AuthProvider = ({ children }) => {
   const signin = async (values) => {
     try {
       const res = await loginRequest(values);
-      setUser(res.data);
+      setUser(res.data.user);
       setIsAuthenticated(true);
-      localStorage.setItem("token", res.data.token);
+      Cookies.set("token", res.data.token); // Guardar el token en las cookies
     } catch (error) {
       setErrors(error.response.data);
     }
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    Cookies.remove("token");
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -62,37 +63,41 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     async function checkLogin() {
-      try {
-        const token = localStorage.getItem("token");
-  
-        if (!token.token) {
-          setIsAuthenticated(false);
-          setLoading(false);
-          return setUser(null);
+        const token = Cookies.get("token");
+        if (!token) {
+            setIsAuthenticated(false);
+            setLoading(false);
+            return setUser(null);
         }
-  
-        const res = await verifyTokenRequest(token.token);
-  
-        if (!res.data) {
-          setIsAuthenticated(false);
-          setLoading(false);
-          return;
+        
+        try {
+            const res = await verifyTokenRequest(token);
+            if (!res.data) {
+                setIsAuthenticated(false);
+                setLoading(false);
+                return setUser(null);
+            }
+
+            setIsAuthenticated(true);
+            setUser(res.data);
+            setLoading(false);
+        } catch (error) {
+            setIsAuthenticated(false);
+            setUser(null);
+            setLoading(false);
         }
-  
-        setIsAuthenticated(true);
-        setUser(res.data);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error al verificar el inicio de sesión:", error);
-        setIsAuthenticated(false);
-        setUser(null);
-        setLoading(false);
-      }
     }
-  
-    checkLogin();
-  }, []);
-  
+
+    // Verifica si hay un token antes de llamar a checkLogin
+    const token = Cookies.get("token");
+    if (token) {
+        checkLogin();
+    } else {
+        setLoading(false);
+    }
+}, []);
+
+
 
   return (
     <AuthContext.Provider
