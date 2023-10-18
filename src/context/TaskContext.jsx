@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import {
   createTaskRequest,
   deleteTaskRequest,
@@ -61,6 +61,18 @@ export function TaskProvider({ children }) {
     }
   };
 
+  const updateStatus = async (id, newStatus) => {
+    try {
+      await updateTask(id, { status: newStatus });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getTasks();
+  }, [tasks]);
+
   return (
     <TaskContext.Provider
       value={{
@@ -71,6 +83,7 @@ export function TaskProvider({ children }) {
         getTask,
         updateTask,
         loading,
+        updateStatus,
       }}
     >
       {children}

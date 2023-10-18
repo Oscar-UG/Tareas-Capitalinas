@@ -26,10 +26,9 @@ export const AuthProvider = ({ children }) => {
   const signup = async (values) => {
     try {
       const res = await registerRequest(values);
-      console.log('token', res.data.token);
+      Cookies.set("token", res.data.token); // Guardar el token en las cookies
       setUser(res.data.user);
       setIsAuthenticated(true);
-      Cookies.set("token", res.data.token); // Guardar el token en las cookies
     } catch (error) {
       setErrors(error.response.data);
     }
@@ -38,9 +37,9 @@ export const AuthProvider = ({ children }) => {
   const signin = async (values) => {
     try {
       const res = await loginRequest(values);
+      Cookies.set("token", res.data.token); // Guardar el token en las cookies
       setUser(res.data.user);
       setIsAuthenticated(true);
-      Cookies.set("token", res.data.token); // Guardar el token en las cookies
     } catch (error) {
       setErrors(error.response.data);
     }
@@ -63,11 +62,12 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     async function checkLogin() {
+      try {
         const token = Cookies.get("token");
-        if (!token) {
-            setIsAuthenticated(false);
-            setLoading(false);
-            return setUser(null);
+        if (!token.token) {
+          setIsAuthenticated(false);
+          setLoading(false);
+          return setUser(null);
         }
         
         try {
